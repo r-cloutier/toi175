@@ -5,12 +5,15 @@ from priors import *
 def get_result_array():
     # get MCMC results
     samples = fits.open('output_data/3planets_TOI175_H113_HalphaGP_samplesv2')[0].data
-    results = get_results(samples)
-
+    #samples = fits.open('output_data/3planets_TOI175_H113_HalphaGP_samplesv2_reducedmemory')[0].data
+    
+    #results = get_results(samples)
     # fix Kb
-    v = np.percentile(samples[:,18], (16,50,84))
-    results[:,18] = v[1], v[2]-v[1], v[1]-v[0]
+    #v = np.percentile(samples[:,18], (16,50,84))
+    #results[:,18] = v[1], v[2]-v[1], v[1]-v[0]
 
+    results = fits.open('output_data/3planets_TOI175_H113_HalphaGP_resultsv2')[0].data
+    
     return samples, results
 
 
@@ -20,17 +23,17 @@ def get_xticks(j):
         ticklabels = np.array(['%i'%i for i in ticks])
         ticklabels[np.arange(1,6,2)] = ''
     elif j == 1: # lnl
-        ticks = np.arange(0,13,2)
+        ticks = np.arange(0,12,2)
         ticklabels = np.array(['%i'%i for i in ticks])
-        ticklabels[np.arange(1,7,2)] = ''
+        ticklabels[np.arange(1,6,2)] = ''
     elif j == 2: # lnG
         ticks = np.arange(-4,2,2)
         ticklabels = np.array(['%i'%i for i in ticks])
         #ticklabels[np.arange(1,,2)] = ''
     elif j == 3: # lnP
-        ticks = np.arange(2,4.5,.5)
+        ticks = np.arange(2,4,.5)
         ticklabels = np.array(['%i'%i for i in ticks])
-        ticklabels[np.arange(1,5,2)] = ''
+        ticklabels[np.arange(1,4,2)] = ''
     elif j == 4: # s
         ticks = np.arange(0,1.2,.2)
         ticklabels = np.array(['%.1f'%i for i in ticks])
@@ -38,15 +41,15 @@ def get_xticks(j):
     elif j == 5: # V
         ticks = np.arange(-2,3,2)
         ticklabels = np.array(['%i'%i for i in ticks])
-        ticklabels[np.arange(1,3,2)] = ''
+        #ticklabels[np.arange(1,3,2)] = ''
     elif j == 6: # Pb
-        ticks = np.arange(2.252,2.2545,5e-4)
+        ticks = np.arange(2.252,2.2545,1e-3)
         ticklabels = np.array(['%.3f'%i for i in ticks])
-        ticklabels[np.arange(1,6,2)] = ''
+        ticklabels[np.arange(0,4,2)] = ''
     elif j == 7: # T0-T0true
         ticks = np.arange(-4,5,2)*1e-4
         ticklabels = np.array(['%.4f'%i for i in ticks])
-        ticklabels[np.arange(1,5,2)] = ''
+        ticklabels[np.arange(0,5,2)] = ''
     elif j == 8: # Kb
         ticks = np.arange(0,2.5,.5)
         ticklabels = np.array(['%i'%i for i in ticks])
@@ -60,13 +63,13 @@ def get_xticks(j):
         ticklabels = np.array(['%i'%i for i in ticks])
         ticklabels[np.arange(1,5,2)] = ''
     elif j == 11: # Pc
-        ticks = np.arange(3.6895,3.69151,5e-4)
+        ticks = np.arange(3.6895,3.69151,1e-3)
         ticklabels = np.array(['%.4f'%i for i in ticks])
-        ticklabels[np.arange(0,5,2)] = ''
+        ticklabels[np.arange(0,4,2)] = ''
     elif j == 12: # T0-T0true
-        ticks = np.arange(-2,3.1,1)*1e-3
+        ticks = np.arange(-2,2.1,1)*1e-3
         ticklabels = np.array(['%.3f'%i for i in ticks])
-        ticklabels[np.arange(1,6,2)] = ''
+        ticklabels[np.arange(0,5,2)] = ''
     elif j == 13: # Kc
         ticks = np.arange(1,3.6,1)
         ticklabels = np.array(['%i'%i for i in ticks])
@@ -84,9 +87,9 @@ def get_xticks(j):
         ticklabels = np.array(['%.3f'%i for i in ticks])
         ticklabels[np.arange(0,4,2)] = ''
     elif j == 17: # T0-T0true
-        ticks = np.arange(-3,3.1,1)*1e-3
+        ticks = np.arange(-2,3,1)*1e-3
         ticklabels = np.array(['%.3f'%i for i in ticks])
-        ticklabels[np.arange(0,7,2)] = ''
+        ticklabels[np.arange(0,5,2)] = ''
     elif j == 18: # Kd
         ticks = np.arange(0,4,1)
         ticklabels = np.array(['%i'%i for i in ticks])
@@ -156,17 +159,29 @@ def plot_corner(samples, results, pltt=False, label=True):
     order = np.array([0,1,2,3,4,5,16,17,18,19,20,6,7,8,9,10,11,12,13,14,15])
     samples2 = samples[:,order]
     results2 = results[:,order][0]
-    labels = ['$\ln{a}$','$\ln{\lambda}$','$\ln{\Gamma}$','$\ln{P_{GP}}$','$s$','$\gamma_0$',
-	      '$P_b$','$T_{0,b}$','$K_b$','$h_b$','$k_b$',
-	      '$P_c$','$T_{0,c}$','$K_c$','$h_c$','$k_c$',
-	      '$P_d$','$T_{0,d}$','$K_d$','$h_d$','$k_d$']
+    labels = ['$\ln{a}$','$\ln{\lambda}$','$\ln{\Gamma}$','$\ln{P_{GP}}$',
+              '$s$\n[m/s]','$\gamma_0$\n[m/s-5678.16]',
+	      '$P_b$\n[days]','$T_{0,b}$ [BJD\n-2458366.1708]','$K_b$\n[m/s]','$h_b$','$k_b$',
+	      '$P_c$\n[days]','$T_{0,c}$ [BJD\n-2458367.2752]','$K_c$\n[m/s]','$h_c$','$k_c$',
+	      '$P_d$\n[days]','$T_{0,d}$ [BJD\n-2458362.7376]','$K_d$\n[m/s]','$h_d$','$k_d$']
     nparam = samples.shape[1]
-    fig = plt.figure(figsize=(nparam, nparam))
+    #nparam = 8
+    
+    # offset T0 pdfs
+    T0b, T0c, T0d = 2458366.1708, 2458367.2752, 2458362.7376
+    samples2[:,7] -= T0b
+    samples2[:,12] -= T0c
+    samples2[:,17] -= T0d
+    
+    fig = plt.figure(figsize=(nparam*.9, nparam*.9))
     ind = 1
     for i in range(nparam):
+        
         print i/float(nparam)
+
         for j in range(nparam):
             ax = fig.add_subplot(nparam, nparam, ind)
+	    ind += 1
 
             # 2d histograms
             if i > j:
@@ -174,26 +189,31 @@ def plot_corner(samples, results, pltt=False, label=True):
                 ax.pcolormesh(x, y, z.T, cmap='Greys')
                 dx, dy = np.diff(x).mean()/2, np.diff(y).mean()/2
                 levels = np.percentile(z[z != 0], (16,84))
-                ax.contour(x[:-1]+dx, y[:-1]+dy, z.T, levels=levels, colors='k', lw=.8)
-                if len(results2) > 0:
-                    ax.plot(results2[j], results2[i], 'o', ms=6, color='#31a354')
+                ax.contour(x[:-1]+dx, y[:-1]+dy, z.T, levels=levels, colors='k')
+                #if len(results2) > 0:
+                #    ax.plot(results2[j], results2[i], 'o', ms=6,
+                #            color='#31a354') #36e2ac
                 
             # Plot histogram
             elif i == j:
-                y,x,_ = ax.hist(samples2[:,i], bins=bins, histtype='step', color='k', lw=2, normed=True)
-                if i in [0,1,2,3,4]:
-                    kernel = gaussian_kde(samples2[:,i])
-                    xarr = np.linspace(samples2[:,i].min(), samples2[:,i].max(),500)
+                y,x,_ = ax.hist(samples2[:,i], bins=bins, histtype='step',
+                                color='k', lw=2, normed=True)
+                #if i in [0,1,2,3,4]:
+                    #kernel = gaussian_kde(samples2[:,i])
+                    #xarr = np.linspace(samples2[:,i].min(), samples2[:,i].max(),500)
                     #probs = kernel.pdf(xarr) / kernel.pdf(xarr).sum()
                     #result = float(xarr[probs==probs.max()])
-                    ax.plot(xarr, kernel.pdf(xarr), '-', c='#31a354',lw=1.5)
-                if len(results2) > 0:
-                    ylims = ax.get_ylim()
-                    ax.plot(np.repeat(results2[i],2), list(ylims), 'k-', lw=.9)
+                    #ax.plot(xarr, kernel.pdf(xarr), '-', c='#31a354',lw=1.5)
+                #if len(results2) > 0:
+                    #ylims = ax.get_ylim()
+                    #ax.plot(np.repeat(results2[i],2), list(ylims), 'k-', lw=.9)
                     #if len(sigs) > 0:
-                    #ax.fill_between([results2[i]-sigs[i,0], results2[i]+sigs[i,1]], 0, ylims[1], color='k', alpha=.2)
-                    ax.set_ylim(ylims)
-                    
+                    #ax.fill_between([results2[i]-sigs[i,0],
+                    #                 results2[i]+sigs[i,1]], 0, ylims[1],
+                    #                color='k', alpha=.2)
+                ylims = ax.get_ylim()
+                ax.set_ylim(ylims)
+
             # No axis
             else:
                 ax.set_frame_on(False)
@@ -205,6 +225,9 @@ def plot_corner(samples, results, pltt=False, label=True):
             if i != nparam-1:
                 ax.set_xticklabels('')
             else:
+                ticks, ticklabels = get_xticks(j)
+                ax.set_xticks(ticks)
+                ax.set_xticklabels(ticklabels, fontsize=8)
                 if labels != []:
                     ax.set_xlabel(labels[j], fontsize=10)
             ax.set_xlim(get_xlim(j))
@@ -218,17 +241,20 @@ def plot_corner(samples, results, pltt=False, label=True):
                 if labels != []:
                     ax.set_ylabel(labels[i], fontsize=10)
             
-            ind += 1
-
     
-    plt.subplots_adjust(bottom=.1, left=.09, right=.99, top=.99, hspace=.09, wspace=.09)
+    plt.subplots_adjust(bottom=.04, left=.05, right=.99, top=.99,
+                        hspace=.09, wspace=.09)
     if label:
-        plt.savefig('/Users/ryancloutier/Research/TOI_175/plots/corner.png')
+        plt.savefig('/Users/ryancloutier/Research/TOI_175/plots/corner.png',
+                    dpi=100)
     if pltt:
         plt.show()
     plt.close('all')
 
 
 if __name__ == '__main__':
+    #print 'hi'
     samples, results = get_result_array()
+    #samples = samples[:10000]
+    print samples.shape
     plot_corner(samples, results)
