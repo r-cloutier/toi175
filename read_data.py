@@ -52,5 +52,4 @@ def read_HARPS():
     
     return bjd, rv, erv, fwhm, bis, Halpha, eHalpha, Hbeta, eHbeta, Hgamma, eHgamma, NaD, eNaD, Sindex, eSindex
 
-
     
