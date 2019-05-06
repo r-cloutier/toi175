@@ -31,25 +31,31 @@ def bin_data(t, f, ef, dt=.2, include_edges=False, tfull=np.zeros(0)):
     return tbin, fbin, efbin
 
 
-def read_HARPS():
+def read_HARPS(fullRVs=True):
     # RVs
-    bjd, rv, erv = np.loadtxt('input_data/TOI-175_050419_NAIRA.rdb',
-                              skiprows=2).T
+    fname = 'TOI-175_050419_NAIRA_fullRVs.rdb' if fullRVs else 'TOI-175_050419_NAIRA.rdb'
+    bjd, rv, erv = np.loadtxt('input_data/%s'%fname, skiprows=2).T
     bjd += 24e5
     print rv.min()*1e3
     rv -= rv.mean()
     rv *= 1e3
     erv *= 1e3
 
+    # identify programs
+    _,program = np.loadtxt('input_data/prog.dat', dtype='|S50').T
+    program[np.in1d(program, '1102.C-0339(A)')] = 'Bonfils'
+    program[np.in1d(program, '0102.C-0525(A)')] = 'Jenkins'
+
     # ccf params
-    _,fwhm,bis,_,_ = np.loadtxt('input_data/TOI-175_050419_CCFparam.rdb',
-                                skiprows=2).T
+    bjdshort,fwhm,bis,_,_ = np.loadtxt('input_data/TOI-175_050419_CCFparam.rdb',
+                                       skiprows=2).T
+    bjdshort += 24e5
 
     # activity indices
-    p = np.loadtxt('input_data/TOI-175_ActIndex.rdb',
-                   skiprows=2)
+    fname = 'TOI-175_ActIndex_full.rdb' if fullRVs else 'TOI-175_ActIndex.rdb'
+    p = np.loadtxt('input_data/%s'%fname, skiprows=2)
     _,Halpha,eHalpha,Hbeta,eHbeta,Hgamma,eHgamma,NaD,eNaD,Sindex,eSindex = p.T
     
-    return bjd, rv, erv, fwhm, bis, Halpha, eHalpha, Hbeta, eHbeta, Hgamma, eHgamma, NaD, eNaD, Sindex, eSindex
+    return bjd, rv, erv, program, bjdshort, fwhm, bis, Halpha, eHalpha, Hbeta, eHbeta, Hgamma, eHgamma, NaD, eNaD, Sindex, eSindex
 
     

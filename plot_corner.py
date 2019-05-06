@@ -4,15 +4,17 @@ from priors import *
 
 def get_result_array():
     # get MCMC results
-    samples = fits.open('output_data/3planets_TOI175_H113_HalphaGP_samplesv2')[0].data
+    samples = fits.open('output_data/3planets_TOI175_H161_HalphaGP_samplesv1')[0].data
     #samples = fits.open('output_data/3planets_TOI175_H113_HalphaGP_samplesv2_reducedmemory')[0].data
     
-    #results = get_results(samples)
+    results = get_results(samples)
     # fix Kb
-    #v = np.percentile(samples[:,18], (16,50,84))
-    #results[:,18] = v[1], v[2]-v[1], v[1]-v[0]
+    v = np.percentile(samples[:,18], (16,50,84))
+    results[:,18] = v[1], v[2]-v[1], v[1]-v[0]
+    hdu = fits.PrimaryHDU(results)
+    hdu.writeto('output_data/3planets_TOI175_H161_HalphaGP_resultsv1', overwrite=True)
 
-    results = fits.open('output_data/3planets_TOI175_H113_HalphaGP_resultsv2')[0].data
+    #results = fits.open('output_data/3planets_TOI175_H113_HalphaGP_resultsv2')[0].data
     
     return samples, results
 
