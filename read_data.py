@@ -36,16 +36,18 @@ def read_HARPS(fullRVs=True):
     fname = 'TOI-175_050419_NAIRA_fullRVs.rdb' if fullRVs else 'TOI-175_050419_NAIRA.rdb'
     bjd, rv, erv = np.loadtxt('input_data/%s'%fname, skiprows=2).T
     bjd += 24e5
-    print rv.min()*1e3
+    print rv.mean()*1e3
     rv -= rv.mean()
     rv *= 1e3
     erv *= 1e3
 
     # identify programs
     _,program = np.loadtxt('input_data/prog.dat', dtype='|S50').T
+    assert program.size == bjd.size
     program[np.in1d(program, '1102.C-0339(A)')] = 'Bonfils'
     program[np.in1d(program, '0102.C-0525(A)')] = 'Jenkins'
-
+    program[np.in1d(program, 'Berdinas')] = 'Berdinas'
+    
     # ccf params
     bjdshort,fwhm,bis,_,_ = np.loadtxt('input_data/TOI-175_050419_CCFparam.rdb',
                                        skiprows=2).T

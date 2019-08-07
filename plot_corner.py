@@ -1,10 +1,11 @@
 from imports import *
 from priors import *
+from astropy.io import fits
 
 
 def get_result_array():
     # get MCMC results
-    samples = fits.open('output_data/3planets_TOI175_H161_HalphaGP_samplesv1')[0].data
+    samples = fits.open('output_data/3planets_TOI175_H164_HalphaGP_samplesv1')[0].data
     #samples = fits.open('output_data/3planets_TOI175_H113_HalphaGP_samplesv2_reducedmemory')[0].data
     
     results = get_results(samples)
@@ -12,7 +13,7 @@ def get_result_array():
     v = np.percentile(samples[:,18], (16,50,84))
     results[:,18] = v[1], v[2]-v[1], v[1]-v[0]
     hdu = fits.PrimaryHDU(results)
-    hdu.writeto('output_data/3planets_TOI175_H161_HalphaGP_resultsv1', overwrite=True)
+    hdu.writeto('output_data/3planets_TOI175_H164_HalphaGP_resultsv1', overwrite=True)
 
     #results = fits.open('output_data/3planets_TOI175_H113_HalphaGP_resultsv2')[0].data
     
@@ -243,7 +244,17 @@ def plot_corner(samples, results, pltt=False, label=True):
                 if labels != []:
                     ax.set_ylabel(labels[i], fontsize=10)
             
-    
+   
+    # save samples
+    hdr = 'ln a,ln lambda, ln Gamma, ln P_GP, s, gamma_0, P_b, T0_b, K_b, h_b, k_b, P_c, T0_c, K_c, h_c, k_c, P_d, T0_d, K_d, h_d, k_d'
+    samples2[:,7] += T0b-2457e3
+    samples2[:,12] += T0c-2457e3
+    samples2[:,17] += T0d-2457e3
+    inds = np.arange(samples2.shape[0])
+    np.random.shuffle(inds)
+    inds = inds[:10000]
+    np.savetxt('paper/toi175_samples.csv', samples2[inds], fmt='%.6f', delimiter=',', header=hdr)
+ 
     plt.subplots_adjust(bottom=.04, left=.05, right=.99, top=.99,
                         hspace=.09, wspace=.09)
     if label:
